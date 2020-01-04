@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="textNormalSize">16sp</dimen>
+    <dimen name="textLittleSize">12sp</dimen>
+    <dimen name="marginNormal">16dp</dimen>
+    <dimen name="marginLittle">8dp</dimen>
+    <dimen name="paddingNormal">16dp</dimen>
+    <dimen name="paddingLittle">8dp</dimen>
+
+</resources>

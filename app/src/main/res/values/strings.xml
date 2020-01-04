@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">GitUser</string>
+    <string name="repositories">Repositories: %d</string>
+    <string name="followers">Followers: %d</string>
+    <string name="followings">Followings: %d</string>
+    <string name="title_of_browser_chooser">Choose an app</string>
+    <string name="created_at_date">Created: %s</string>
+    <string name="updated_at_date">Updated: %s</string>
+    <string name="see_user_s_repositories">See user\'s repositories</string>
+    <string name="dialog_error_title">Error while was loading</string>
+    <string name="total_size_of_repo">Total size: %d</string>
+    <string name="written_on_language">Written on %s</string>
+    <string name="nothing_selected">Nothing selected</string>
+</resources>
