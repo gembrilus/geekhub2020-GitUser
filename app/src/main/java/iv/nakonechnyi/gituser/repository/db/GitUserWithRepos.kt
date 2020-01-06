@@ -16,5 +16,22 @@ data class GitUserWithRepos(
     )
     val repos: List<GitRepo>
 ){
-    fun toLiveData() = MutableLiveData<GitUserWithRepos>(this) as LiveData<GitUserWithRepos>
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as GitUserWithRepos
+
+        if (user != other.user) return false
+        if (repos != other.repos) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = user.hashCode()
+        result = 31 * result + repos.hashCode()
+        return result
+    }
 }
