@@ -1,12 +1,8 @@
 package iv.nakonechnyi.gituser.repository
 
-import android.content.Context
-import android.util.Log
 import iv.nakonechnyi.gituser.repository.db.GitDb
 import iv.nakonechnyi.gituser.repository.db.GitUserWithRepos
 import iv.nakonechnyi.gituser.repository.gitservice.GitUserInfoService
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 class GitUserRepository private constructor(
     private val db: GitDb,
@@ -19,26 +15,29 @@ class GitUserRepository private constructor(
     private val isNetworkAvailable get() = netManager.isNetworkAvailable
 
     suspend fun getFullUserInfo(userName: String?): Status<GitUserWithRepos> {
-        val user = userName?.let{findUserInDb(it)}
+        val user = userName?.let { findUserInDb(it) }
         return when {
             userName == null -> {
-                Log.i("REPOSITORY", "NO_USERNAME__LOAD_ALL_USERS")
-                Status.Success(getAllSavedUsers())
+                if (isNetworkAvailable){
+                    Status.Success(getAllSavedUsers())
+                } else {
+                    Status.DbSuccess(getAllSavedUsers())
+                }
             }
             user != null -> {
-                Log.i("REPOSITORY", "USER_EXIST__LOAD_USER_FROM_DB")
-                Status.Success(listOf(user))
+                if (isNetworkAvailable){
+                    Status.Success(listOf(user))
+                } else {
+                    Status.DbSuccess(listOf(user))
+                }
             }
-            !isNetworkAvailable -> {
-                Log.i("REPOSITORY", "NO_USERNAME_AND_NO_NETWORK__LOAD_ALL_USERS")
-                Status.NetworkFailed(getAllSavedUsers())
-            }
-            else -> {
-                Log.i("REPOSITORY", "LOAD_USER_FROM_NET")
-                fetchFromNet(userName)
-            }
+            isNetworkAvailable ->   fetchFromNet(userName)
+            else ->                 Status.NetworkFailed(getAllSavedUsers())
         }
     }
+
+    suspend fun removeUserFromDb(login: String) =
+        dao.delete(login)
 
     fun closeDb() = db.close()
 
@@ -47,19 +46,16 @@ class GitUserRepository private constructor(
             val user = gitUserInfo(userName)
             val repos = gitReposByUsername(userName)
             val userWithRepos = GitUserWithRepos(user, repos)
-            Log.i("LOAD_USER_FROM_NET", "USER_WITH_REPOS_CREATED")
+
             putUserToDb(userWithRepos)
-            Log.i("LOAD_USER_FROM_NET", "USER_WITH_REPOS_PUTTED_TO_DB")
+
             Status.Success(listOf(GitUserWithRepos(user, repos)))
 
         } catch (e: Throwable) {
-            Log.i("LOAD_USER_FROM_NET", e.message)
+
             Status.Failed<GitUserWithRepos>(e)
 
         }
-
-    suspend fun removeUserFromDb(login: String) =
-        dao.delete(login)
 
     private suspend fun gitUserInfo(userName: String) =
         service.gitUserInfo(userName)
@@ -81,14 +77,14 @@ class GitUserRepository private constructor(
         @Volatile
         private var INSTANCE: GitUserRepository? = null
 
-        fun get(context: Context) =
+        fun get(db: GitDb, service: GitUserInfoService, netManager: NetManager) =
             INSTANCE
                 ?: synchronized(this) {
                     INSTANCE
                         ?: GitUserRepository(
-                            GitDb.database(context),
-                            GitUserInfoService(context),
-                            NetManager(context)
+                            db,
+                            service,
+                            netManager
                         ).also {
                             INSTANCE = it
                         }

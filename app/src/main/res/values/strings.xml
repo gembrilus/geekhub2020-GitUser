@@ -11,4 +11,6 @@
     <string name="total_size_of_repo">Total size: %d</string>
     <string name="written_on_language">Written on %s</string>
     <string name="nothing_selected">Nothing selected</string>
+    <string name="no_internet">No internet</string>
+    <string name="enter_a_user_login">Enter a user login</string>
 </resources>

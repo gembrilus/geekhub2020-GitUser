@@ -1,7 +1,5 @@
 package iv.nakonechnyi.gituser.repository.gitservice
 
-import android.content.Context
-import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import iv.nakonechnyi.gituser.BuildConfig
@@ -12,7 +10,7 @@ import okhttp3.Protocol
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
-class GitUserInfoService(context: Context) {
+class GitUserInfoService {
 
     private val IO = Dispatchers.IO
 
@@ -22,7 +20,6 @@ class GitUserInfoService(context: Context) {
 
     private val okHttpClient = OkHttpClient.Builder()
         .protocols(listOf(Protocol.HTTP_1_1))
-        .addInterceptor(ChuckerInterceptor(context))
         .build()
 
     private val retrofit = Retrofit.Builder()

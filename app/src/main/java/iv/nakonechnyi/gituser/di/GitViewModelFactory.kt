@@ -4,6 +4,9 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import iv.nakonechnyi.gituser.repository.GitUserRepository
+import iv.nakonechnyi.gituser.repository.NetManager
+import iv.nakonechnyi.gituser.repository.db.GitDb
+import iv.nakonechnyi.gituser.repository.gitservice.GitUserInfoService
 import iv.nakonechnyi.gituser.ui.GitViewModel
 
 @Suppress("UNCHECKED_CAST")
@@ -18,7 +21,11 @@ class GitViewModelFactory(private val repository: GitUserRepository)
 
         fun factory(context: Context) =
             GitViewModelFactory(
-                GitUserRepository.get(context)
+                GitUserRepository.get(
+                    GitDb.database(context),
+                    GitUserInfoService(),
+                    NetManager(context)
+                )
             )
 
     }

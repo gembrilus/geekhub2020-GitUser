@@ -20,7 +20,7 @@
             android:id="@+id/tw"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="No internet"
+            android:text="@string/no_internet"
             android:visibility="gone"/>
 
         <EditText
@@ -30,7 +30,7 @@
             android:padding="8dp"
             android:inputType="textImeMultiLine"
             android:imeOptions="actionDone"
-            android:hint="Enter a user login" />
+            android:hint="@string/enter_a_user_login" />
 
     </androidx.appcompat.widget.Toolbar>
 

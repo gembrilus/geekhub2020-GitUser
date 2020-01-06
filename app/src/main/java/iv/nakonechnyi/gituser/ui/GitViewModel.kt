@@ -1,6 +1,5 @@
 package iv.nakonechnyi.gituser.ui
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -39,10 +38,17 @@ class GitViewModel(
 
             when(val status = repository.getFullUserInfo(login)){
                 is Status.Success -> {
-                    Log.i("GitViewModel", "Success")
                     _success.value = status.result
+                    noNetwork.value = false
                 }
-                is Status.Failed -> failed.value = status.error
+                is Status.DbSuccess -> {
+                    _success.value = status.result
+                    noNetwork.value = true
+                }
+                is Status.Failed -> {
+                    failed.value = status.error
+                    noNetwork.value = false
+                }
                 is Status.NetworkFailed -> {
                     _success.value = status.result
                     noNetwork.value = true

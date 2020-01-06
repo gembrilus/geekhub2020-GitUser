@@ -6,7 +6,7 @@ import java.util.*
 
 fun toHumanReadableDateString(date: String): String {
     val fromPattern = "yyyy-MM-dd'T'hh:mm:ss'Z'"
-    val toPattern = "dd-MMM-yyyy hh:mm"
+    val toPattern = "dd-MMM-yyyy HH:mm"
 
     val sourceDate = SimpleDateFormat(fromPattern, Locale.ENGLISH).parse(date)
         ?: throw IllegalArgumentException("Date is nullable")
