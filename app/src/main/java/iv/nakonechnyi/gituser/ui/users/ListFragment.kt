@@ -17,6 +17,7 @@ import iv.nakonechnyi.gituser.repository.db.GitUserWithRepos
 import iv.nakonechnyi.gituser.ui.GitItemTouchHelperCallback
 import iv.nakonechnyi.gituser.ui.GitViewModel
 import iv.nakonechnyi.gituser.ui.ItemTouchHelperAdapter
+import iv.nakonechnyi.gituser.ui.ToolbarViewStatus
 import iv.nakonechnyi.gituser.ui.adapters.GitUsersAdapter
 import kotlinx.android.synthetic.main.fragment_list.*
 import okhttp3.internal.userAgent
@@ -76,8 +77,17 @@ class ListFragment : Fragment(), ItemTouchHelperAdapter {
         model?.success?.observe(this, Observer {
             mData = it
             mAdapter.setItems(it as MutableList<GitUserWithRepos>)
-            Log.i("LIST_FRAGMENT", it.toString())
         })
+    }
+
+    override fun onResume() {
+        super.onResume()
+        model?.setToolbarStatus(ToolbarViewStatus.WITH_INPUT)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        model?.setToolbarStatus(ToolbarViewStatus.WITHOUT_INPUT)
     }
 
     override fun onItemDelete(position: Int) {

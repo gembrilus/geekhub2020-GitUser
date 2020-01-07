@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="repositories">Репозитории: %d</string>
+    <string name="followers">Последователи: %d</string>
+    <string name="followings">Следит: %d</string>
+    <string name="title_of_browser_chooser">Выберите приложение</string>
+    <string name="created_at_date">Создан: %s</string>
+    <string name="updated_at_date">Обновлен: %s</string>
+    <string name="see_user_s_repositories">Репозитории пользователя</string>
+    <string name="dialog_error_title">Произошла ошибка во время загрузки</string>
+    <string name="total_size_of_repo">Размер: %d</string>
+    <string name="written_on_language">Написано на %s</string>
+    <string name="nothing_selected">Ничего не выбрано</string>
+    <string name="no_internet">Нет интернета</string>
+    <string name="enter_a_user_login">Введите логин пользователя</string>
+</resources>

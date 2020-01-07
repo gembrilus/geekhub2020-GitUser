@@ -13,11 +13,26 @@ class GitViewModel(
     private val repository: GitUserRepository
 ) : ViewModel() {
 
-    private val _position = MutableLiveData<Int>()
-    val position: LiveData<Int> get() = _position
+    private val _position = MutableLiveData<Int?>()
+    val position: LiveData<Int?> get() = _position
 
-    fun setPosition(value: Int){
+    fun setPosition(value: Int?){
         _position.value = value
+    }
+
+    private val _login = MutableLiveData<String?>()
+    val login: LiveData<String?> = _login
+
+    fun setLogin(value: String?) {
+        _login.value = value
+        refresh(value)
+    }
+
+    private val _toolbarViewStatus = MutableLiveData<ToolbarViewStatus>()
+    val toolbarViewStatus: LiveData<ToolbarViewStatus> get() = _toolbarViewStatus
+
+    fun setToolbarStatus(value: ToolbarViewStatus) {
+        _toolbarViewStatus.value = value
     }
 
     private val _success = MutableLiveData<List<GitUserWithRepos>>()

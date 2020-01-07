@@ -18,6 +18,7 @@ import iv.nakonechnyi.gituser.common.underline
 import iv.nakonechnyi.gituser.di.GitViewModelFactory
 import iv.nakonechnyi.gituser.entities.GitRepo
 import iv.nakonechnyi.gituser.ui.GitViewModel
+import iv.nakonechnyi.gituser.ui.ToolbarViewStatus
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_main.view.*
 import kotlinx.android.synthetic.main.fragment_details.view.*
@@ -60,7 +61,9 @@ class DetailedFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? = inflater.inflate(R.layout.fragment_details, container, false)
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) = bind()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        bind()
+    }
 
     private fun bind() {
         val userWithRepos = model?.success?.value?.get(position)
