@@ -21,7 +21,7 @@ class GitViewModel(
     }
 
     private val _login = MutableLiveData<String?>()
-    val login: LiveData<String?> = _login
+    val login: LiveData<String?> get() = _login
 
     fun setLogin(value: String?) {
         _login.value = value
