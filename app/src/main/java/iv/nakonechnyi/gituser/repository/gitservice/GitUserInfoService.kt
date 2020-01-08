@@ -34,8 +34,8 @@ class GitUserInfoService {
         client.fetchGitUserInfo(userName)
     }
 
-    suspend fun gitReposByUsername(userName: String) = withContext(IO){
-        client.fetchGitReposByUsername(userName)
+    suspend fun gitReposByUsername(userName: String, perPage: Int) = withContext(IO){
+        client.fetchGitReposByUsername(userName, perPage)
     }
 
 }

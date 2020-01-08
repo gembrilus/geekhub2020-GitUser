@@ -12,17 +12,12 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import iv.nakonechnyi.gituser.R
-import iv.nakonechnyi.gituser.ui.repos.ReposFragment
 import iv.nakonechnyi.gituser.common.toHumanReadableDateString
 import iv.nakonechnyi.gituser.common.underline
 import iv.nakonechnyi.gituser.di.GitViewModelFactory
 import iv.nakonechnyi.gituser.entities.GitRepo
 import iv.nakonechnyi.gituser.ui.GitViewModel
-import iv.nakonechnyi.gituser.ui.ToolbarViewStatus
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.activity_main.view.*
 import kotlinx.android.synthetic.main.fragment_details.view.*
-import kotlinx.android.synthetic.main.fragment_details.view.login
 
 class DetailedFragment : Fragment() {
 

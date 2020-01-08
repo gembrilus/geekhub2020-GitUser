@@ -52,11 +52,11 @@ class GitUserRepositoryTest: InitialTestClass() {
 
         doReturn(true).whenever(netManager).isNetworkAvailable
         doReturn(TEST_USER).whenever(gitUserInfoService).fetchTestUser(login)
-        doReturn(TEST_REPOS).whenever(gitUserInfoService).fetchTestRepos(login)
+        doReturn(TEST_REPOS).whenever(gitUserInfoService).fetchTestRepos(login, 1)
         doReturn(null).whenever(dao).findTestUserInDb(login)
 
         val user = gitUserInfoService.fetchTestUser(login)
-        val repos = gitUserInfoService.fetchTestRepos(login)
+        val repos = gitUserInfoService.fetchTestRepos(login, 1)
         val expectedValue = Status.Success(listOf(GitUserWithRepos(user, repos)))
 
         val actualValue = repository.fetch(login)
@@ -66,7 +66,7 @@ class GitUserRepositoryTest: InitialTestClass() {
         assertEquals(expectedValue, actualValue)
 
         verify(gitUserInfoService, atLeastOnce()).fetchTestUser(login)
-        verify(gitUserInfoService, atLeastOnce()).fetchTestRepos(login)
+        verify(gitUserInfoService, atLeastOnce()).fetchTestRepos(login, 1)
         verify(netManager, atLeastOnce()).isNetworkAvailable
         verify(dao, atLeastOnce()).findTestUserInDb(login)
 
@@ -80,11 +80,11 @@ class GitUserRepositoryTest: InitialTestClass() {
 
         doReturn(false).whenever(netManager).isNetworkAvailable
         doReturn(TEST_USER).whenever(gitUserInfoService).fetchTestUser(login)
-        doReturn(TEST_REPOS).whenever(gitUserInfoService).fetchTestRepos(login)
+        doReturn(TEST_REPOS).whenever(gitUserInfoService).fetchTestRepos(login, 1)
         doReturn(null).whenever(dao).findTestUserInDb(login)
 
         val user = gitUserInfoService.fetchTestUser(login)
-        val repos = gitUserInfoService.fetchTestRepos(login)
+        val repos = gitUserInfoService.fetchTestRepos(login, 1)
         val list = listOf(GitUserWithRepos(user, repos))
 
         doReturn(list).whenever(dao).fetchAllTestUsers()
@@ -98,7 +98,7 @@ class GitUserRepositoryTest: InitialTestClass() {
         assertEquals(expectedValue, actualValue)
 
         verify(gitUserInfoService, atLeastOnce()).fetchTestUser(login)
-        verify(gitUserInfoService, atLeastOnce()).fetchTestRepos(login)
+        verify(gitUserInfoService, atLeastOnce()).fetchTestRepos(login, 1)
         verify(netManager, atLeastOnce()).isNetworkAvailable
         verify(database, atLeastOnce()).gitUserReposDao()
         verify(dao, atLeastOnce()).findTestUserInDb(login)
@@ -116,7 +116,7 @@ class GitUserRepositoryTest: InitialTestClass() {
 
         doReturn(true).whenever(netManager).isNetworkAvailable
         doThrow(error).whenever(gitUserInfoService).fetchTestUser(login)
-        doThrow(error).whenever(gitUserInfoService).fetchTestRepos(login)
+        doThrow(error).whenever(gitUserInfoService).fetchTestRepos(login, 1)
         doReturn(null).whenever(dao).findTestUserInDb(login)
 
         val expectedValue1 = try {
@@ -129,7 +129,7 @@ class GitUserRepositoryTest: InitialTestClass() {
 
         val expectedValue2 = try {
             val user = TEST_USER
-            val repos = gitUserInfoService.fetchTestRepos(login)
+            val repos = gitUserInfoService.fetchTestRepos(login, 1)
             Status.Success(listOf(GitUserWithRepos(user, repos)))
         } catch (t: Throwable) {
             Status.Failed<GitUserWithRepos>(t)
@@ -143,7 +143,7 @@ class GitUserRepositoryTest: InitialTestClass() {
         assertEquals(expectedValue2, actualValue)
 
         verify(gitUserInfoService, atLeastOnce()).fetchTestUser(login)
-        verify(gitUserInfoService, atLeastOnce()).fetchTestRepos(login)
+        verify(gitUserInfoService, atLeastOnce()).fetchTestRepos(login, 1)
         verify(netManager, atLeastOnce()).isNetworkAvailable
         verify(dao, atLeastOnce()).findTestUserInDb(login)
 
@@ -157,10 +157,10 @@ class GitUserRepositoryTest: InitialTestClass() {
 
         doReturn(false).whenever(netManager).isNetworkAvailable
         doReturn(TEST_USER).whenever(gitUserInfoService).fetchTestUser(login)
-        doReturn(TEST_REPOS).whenever(gitUserInfoService).fetchTestRepos(login)
+        doReturn(TEST_REPOS).whenever(gitUserInfoService).fetchTestRepos(login, 1)
 
         val user = gitUserInfoService.fetchTestUser(login)
-        val repos = gitUserInfoService.fetchTestRepos(login)
+        val repos = gitUserInfoService.fetchTestRepos(login, 1)
         val userWithRepos = GitUserWithRepos(user, repos)
 
         doReturn(userWithRepos).whenever(dao).findTestUserInDb(login)
@@ -174,7 +174,7 @@ class GitUserRepositoryTest: InitialTestClass() {
         assertEquals(expectedValue, actualValue)
 
         verify(gitUserInfoService, atLeastOnce()).fetchTestUser(login)
-        verify(gitUserInfoService, atLeastOnce()).fetchTestRepos(login)
+        verify(gitUserInfoService, atLeastOnce()).fetchTestRepos(login, 1)
         verify(dao, atLeastOnce()).findTestUserInDb(login)
         verify(netManager, never()).isNetworkAvailable
 

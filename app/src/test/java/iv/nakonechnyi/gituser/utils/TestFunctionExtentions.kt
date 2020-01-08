@@ -9,8 +9,8 @@ fun GitUserInfoService.fetchTestUser(login: String) = runBlocking {
     gitUserInfo(login)
 }
 
-fun GitUserInfoService.fetchTestRepos(login: String) = runBlocking {
-    gitReposByUsername(login)
+fun GitUserInfoService.fetchTestRepos(login: String, perPage: Int) = runBlocking {
+    gitReposByUsername(login, perPage)
 }
 
 fun GitUserReposDao.fetchAllTestUsers() = runBlocking {

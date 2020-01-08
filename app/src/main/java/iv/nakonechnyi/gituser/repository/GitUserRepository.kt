@@ -44,7 +44,7 @@ class GitUserRepository private constructor(
     private suspend fun fetchFromNet(userName: String) =
         try {
             val user = gitUserInfo(userName)
-            val repos = gitReposByUsername(userName)
+            val repos = gitReposByUsername(userName, user.publicRepos)
             val userWithRepos = GitUserWithRepos(user, repos)
 
             putUserToDb(userWithRepos)
@@ -60,8 +60,8 @@ class GitUserRepository private constructor(
     private suspend fun gitUserInfo(userName: String) =
         service.gitUserInfo(userName)
 
-    private suspend fun gitReposByUsername(userName: String) =
-        service.gitReposByUsername(userName)
+    private suspend fun gitReposByUsername(userName: String, perPage: Int) =
+        service.gitReposByUsername(userName, perPage)
 
     private suspend fun getAllSavedUsers() =
         dao.getAllSavedUsers()

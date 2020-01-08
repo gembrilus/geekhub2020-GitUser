@@ -39,13 +39,13 @@ class GitUserInfoServiceTest: InitialTestClass() {
     @Test
     fun check_that_the_method_gitReposByUsername_works() {
 
-        doReturn(TEST_REPOS).whenever(gitUserInfoService).fetchTestRepos("gembrilus")
+        doReturn(TEST_REPOS).whenever(gitUserInfoService).fetchTestRepos("gembrilus", 1)
 
-        val actual = gitUserInfoService.fetchTestRepos("gembrilus")
+        val actual = gitUserInfoService.fetchTestRepos("gembrilus", 1)
 
         assertEquals(TEST_REPOS, actual)
 
-        verify(gitUserInfoService, atLeastOnce()).fetchTestRepos("gembrilus")
+        verify(gitUserInfoService, atLeastOnce()).fetchTestRepos("gembrilus", 1)
 
     }
 }
