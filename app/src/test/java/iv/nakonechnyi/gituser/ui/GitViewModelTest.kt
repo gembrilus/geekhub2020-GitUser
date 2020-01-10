@@ -1,33 +1,26 @@
 package iv.nakonechnyi.gituser.ui
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.nhaarman.mockitokotlin2.*
 import iv.nakonechnyi.gituser.InitialTestClass
 import iv.nakonechnyi.gituser.repository.GitUserRepository
 import iv.nakonechnyi.gituser.repository.Status
 import iv.nakonechnyi.gituser.repository.db.GitUserWithRepos
 import iv.nakonechnyi.gituser.utils.GitTestCoroutineDispatcher
-import iv.nakonechnyi.gituser.utils.fetch
 import iv.nakonechnyi.gituser.utils.getOrAwaitValue
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.Runnable
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
-import org.hamcrest.Matchers
 import org.hamcrest.Matchers.equalTo
 import org.junit.After
-import org.junit.Test
-
-import org.junit.Assert.*
+import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Rule
+import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
-import java.lang.RuntimeException
-import kotlin.coroutines.CoroutineContext
 
 @RunWith(MockitoJUnitRunner::class)
 @ExperimentalCoroutinesApi
@@ -61,11 +54,11 @@ class GitViewModelTest : InitialTestClass() {
     }
 
     @Test
-    fun check_property_success() {
+    fun check_property_success() = runBlocking {
 
         val expectedValue = listOf(TEST_USER_OBJECT)
 
-        doReturn(Status.Success(expectedValue)).whenever(repository).fetch(login)
+        doReturn(Status.Success(expectedValue)).whenever(repository).getFullUserInfo(login)
 
         gitViewModel.refresh(login)
 
@@ -74,11 +67,11 @@ class GitViewModelTest : InitialTestClass() {
     }
 
     @Test
-    fun check_property_failed() {
+    fun check_property_failed() = runBlocking {
 
         val expectedValue = Throwable()
 
-        doReturn(Status.Failed<GitUserWithRepos>(expectedValue)).whenever(repository).fetch(login)
+        doReturn(Status.Failed<GitUserWithRepos>(expectedValue)).whenever(repository).getFullUserInfo(login)
 
         gitViewModel.refresh(login)
 
@@ -88,12 +81,12 @@ class GitViewModelTest : InitialTestClass() {
     }
 
     @Test
-    fun check_property_NoNetwork() {
+    fun check_property_NoNetwork() = runBlocking {
 
         val expectedValue = true
         val returnValue = Status.NetworkFailed(listOf(TEST_USER_OBJECT))
 
-        doReturn(returnValue).whenever(repository).fetch(login)
+        doReturn(returnValue).whenever(repository).getFullUserInfo(login)
 
         gitViewModel.refresh(login)
 
@@ -102,12 +95,12 @@ class GitViewModelTest : InitialTestClass() {
     }
 
     @Test
-    fun check_property_NoNetwork_when_network_is_resumed() {
+    fun check_property_NoNetwork_when_network_is_resumed() = runBlocking {
 
         val expectedValue = false
         val returnValueOnSuccess = Status.Success(listOf(TEST_USER_OBJECT))
 
-        doReturn(returnValueOnSuccess).whenever(repository).fetch(login)
+        doReturn(returnValueOnSuccess).whenever(repository).getFullUserInfo(login)
 
         gitViewModel.refresh(login)
 
@@ -115,12 +108,12 @@ class GitViewModelTest : InitialTestClass() {
     }
 
     @Test
-    fun check_property_NoNetwork_when_fails_on_network_request() {
+    fun check_property_NoNetwork_when_fails_on_network_request() = runBlocking {
 
         val expectedValue = false
         val returnValueOnFailure = Status.Failed<GitUserWithRepos>(Throwable())
 
-        doReturn(returnValueOnFailure).whenever(repository).fetch(login)
+        doReturn(returnValueOnFailure).whenever(repository).getFullUserInfo(login)
 
         gitViewModel.refresh(login)
 
@@ -128,13 +121,13 @@ class GitViewModelTest : InitialTestClass() {
     }
 
     @Test
-    fun check_propertis_success_and_nonetwork_on_status_DbSuccess() {
+    fun check_propertis_success_and_nonetwork_on_status_DbSuccess() = runBlocking {
 
         val expectedOnNoNetwork = true
         val expectedOnSuccess = listOf(TEST_USER_OBJECT)
         val returnValue = Status.DbSuccess(expectedOnSuccess)
 
-        doReturn(returnValue).whenever(repository).fetch(login)
+        doReturn(returnValue).whenever(repository).getFullUserInfo(login)
 
         gitViewModel.refresh(login)
 

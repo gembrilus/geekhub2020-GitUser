@@ -9,6 +9,7 @@ import iv.nakonechnyi.gituser.repository.gitservice.GitUserInfoService
 import iv.nakonechnyi.gituser.utils.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import org.junit.After
@@ -24,6 +25,7 @@ import org.mockito.junit.MockitoJUnitRunner
 class GitUserRepositoryTest: InitialTestClass() {
 
     private val login = "gembrilus"
+    private val user = GitUserWithRepos(TEST_USER, TEST_REPOS)
 
     private lateinit var repository: GitUserRepository
 
@@ -48,138 +50,84 @@ class GitUserRepositoryTest: InitialTestClass() {
     }
 
     @Test
-    fun check_getFullUserInfo_when_network_enabled_return_success() {
+    fun check_getFullUserInfo_when_network_enabled_return_success() = runBlocking<Unit> {
 
         doReturn(true).whenever(netManager).isNetworkAvailable
-        doReturn(TEST_USER).whenever(gitUserInfoService).fetchTestUser(login)
-        doReturn(TEST_REPOS).whenever(gitUserInfoService).fetchTestRepos(login, 1)
-        doReturn(null).whenever(dao).findTestUserInDb(login)
+        doReturn(TEST_USER).whenever(gitUserInfoService).gitUserInfo(login)
+        doReturn(TEST_REPOS).whenever(gitUserInfoService).gitReposByUsername(login, 1)
+        doReturn(null).whenever(dao).findByLogin(login)
+        doReturn(1).whenever(dao).insert(user)
 
-        val user = gitUserInfoService.fetchTestUser(login)
-        val repos = gitUserInfoService.fetchTestRepos(login, 1)
-        val expectedValue = Status.Success(listOf(GitUserWithRepos(user, repos)))
+        assertEquals(Status.Success(listOf(GitUserWithRepos(TEST_USER, TEST_REPOS))), repository.getFullUserInfo(login))
 
-        val actualValue = repository.fetch(login)
-
-        print(actualValue)
-
-        assertEquals(expectedValue, actualValue)
-
-        verify(gitUserInfoService, atLeastOnce()).fetchTestUser(login)
-        verify(gitUserInfoService, atLeastOnce()).fetchTestRepos(login, 1)
+        verify(gitUserInfoService, atLeastOnce()).gitUserInfo(login)
+        verify(gitUserInfoService, atLeastOnce()).gitReposByUsername(login, 1)
         verify(netManager, atLeastOnce()).isNetworkAvailable
-        verify(dao, atLeastOnce()).findTestUserInDb(login)
-
+        verify(dao, atLeastOnce()).findByLogin(login)
+        verify(dao, atLeastOnce()).insert(user)
         verifyNoMoreInteractions(gitUserInfoService)
         verifyNoMoreInteractions(netManager)
+        verifyNoMoreInteractions(dao)
 
     }
 
     @Test
-    fun check_getFullUserInfo_when_network_disabled_return_NetworkFailed() {
+    fun check_getFullUserInfo_when_network_disabled_return_NetworkFailed() = runBlocking<Unit> {
 
         doReturn(false).whenever(netManager).isNetworkAvailable
-        doReturn(TEST_USER).whenever(gitUserInfoService).fetchTestUser(login)
-        doReturn(TEST_REPOS).whenever(gitUserInfoService).fetchTestRepos(login, 1)
-        doReturn(null).whenever(dao).findTestUserInDb(login)
+        doReturn(null).whenever(dao).findByLogin(login)
+        doReturn(listOf(user)).whenever(dao).getAllSavedUsers()
 
-        val user = gitUserInfoService.fetchTestUser(login)
-        val repos = gitUserInfoService.fetchTestRepos(login, 1)
-        val list = listOf(GitUserWithRepos(user, repos))
+        assertEquals(Status.NetworkFailed(listOf(user)), repository.getFullUserInfo(login))
 
-        doReturn(list).whenever(dao).fetchAllTestUsers()
-
-
-        val expectedValue = Status.NetworkFailed(dao.fetchAllTestUsers())
-        val actualValue = repository.fetch(login)
-
-        print(actualValue)
-
-        assertEquals(expectedValue, actualValue)
-
-        verify(gitUserInfoService, atLeastOnce()).fetchTestUser(login)
-        verify(gitUserInfoService, atLeastOnce()).fetchTestRepos(login, 1)
+        verify(gitUserInfoService, never()).gitUserInfo(login)
+        verify(gitUserInfoService, never()).gitReposByUsername(login, 1)
         verify(netManager, atLeastOnce()).isNetworkAvailable
-        verify(database, atLeastOnce()).gitUserReposDao()
-        verify(dao, atLeastOnce()).findTestUserInDb(login)
-        verify(dao, atLeastOnce()).fetchAllTestUsers()
-
+        verify(dao, atLeastOnce()).findByLogin(login)
+        verify(dao, atLeastOnce()).getAllSavedUsers()
         verifyNoMoreInteractions(gitUserInfoService)
         verifyNoMoreInteractions(netManager)
+        verifyNoMoreInteractions(dao)
 
     }
 
     @Test
-    fun check_getFullUserInfo_when_network_enabled_return_failed() {
+    fun check_getFullUserInfo_when_network_enabled_return_failed() = runBlocking<Unit> {
 
         val error = RuntimeException("error")
-
         doReturn(true).whenever(netManager).isNetworkAvailable
-        doThrow(error).whenever(gitUserInfoService).fetchTestUser(login)
-        doThrow(error).whenever(gitUserInfoService).fetchTestRepos(login, 1)
-        doReturn(null).whenever(dao).findTestUserInDb(login)
+        doThrow(error).whenever(gitUserInfoService).gitUserInfo(login)
+        doReturn(null).whenever(dao).findByLogin(login)
 
-        val expectedValue1 = try {
-            val user = gitUserInfoService.fetchTestUser(login)
-            val repos = TEST_REPOS
-            Status.Success(listOf(GitUserWithRepos(user, repos)))
-        } catch (t: Throwable) {
-            Status.Failed<GitUserWithRepos>(t)
-        }
+        assertEquals(Status.Failed<GitUserWithRepos>(error), repository.getFullUserInfo(login))
 
-        val expectedValue2 = try {
-            val user = TEST_USER
-            val repos = gitUserInfoService.fetchTestRepos(login, 1)
-            Status.Success(listOf(GitUserWithRepos(user, repos)))
-        } catch (t: Throwable) {
-            Status.Failed<GitUserWithRepos>(t)
-        }
-
-        val actualValue = repository.fetch(login)
-
-        print(actualValue)
-
-        assertEquals(expectedValue1, actualValue)
-        assertEquals(expectedValue2, actualValue)
-
-        verify(gitUserInfoService, atLeastOnce()).fetchTestUser(login)
-        verify(gitUserInfoService, atLeastOnce()).fetchTestRepos(login, 1)
+        verify(gitUserInfoService, atLeastOnce()).gitUserInfo(login)
         verify(netManager, atLeastOnce()).isNetworkAvailable
-        verify(dao, atLeastOnce()).findTestUserInDb(login)
-
+        verify(dao, atLeastOnce()).findByLogin(login)
         verifyNoMoreInteractions(gitUserInfoService)
         verifyNoMoreInteractions(netManager)
+        verifyNoMoreInteractions(dao)
 
     }
 
     @Test
-    fun check_getFullUserInfo_when_network_enabled_and_user_exist_in_db_return_success_with_one_user_in_list() {
+    fun check_getFullUserInfo_when_network_enabled_and_user_exist_in_db_return_DbSuccess_with_one_user_in_list() = runBlocking<Unit> {
 
-        doReturn(false).whenever(netManager).isNetworkAvailable
-        doReturn(TEST_USER).whenever(gitUserInfoService).fetchTestUser(login)
-        doReturn(TEST_REPOS).whenever(gitUserInfoService).fetchTestRepos(login, 1)
+        doReturn(true).whenever(netManager).isNetworkAvailable
+        doReturn(TEST_USER).whenever(gitUserInfoService).gitUserInfo(login)
+        doReturn(TEST_REPOS).whenever(gitUserInfoService).gitReposByUsername(login, 1)
+        doReturn(user).whenever(dao).findByLogin(login)
+        doReturn(1).whenever(dao).insert(user)
 
-        val user = gitUserInfoService.fetchTestUser(login)
-        val repos = gitUserInfoService.fetchTestRepos(login, 1)
-        val userWithRepos = GitUserWithRepos(user, repos)
+        assertEquals(Status.DbSuccess(listOf(user)), repository.getFullUserInfo(login))
 
-        doReturn(userWithRepos).whenever(dao).findTestUserInDb(login)
-
-        val expectedValue = Status.Success(listOf(dao.findTestUserInDb(login)))
-
-        val actualValue = repository.fetch(login)
-
-        print(actualValue)
-
-        assertEquals(expectedValue, actualValue)
-
-        verify(gitUserInfoService, atLeastOnce()).fetchTestUser(login)
-        verify(gitUserInfoService, atLeastOnce()).fetchTestRepos(login, 1)
-        verify(dao, atLeastOnce()).findTestUserInDb(login)
+        verify(gitUserInfoService, never()).gitUserInfo(login)
+        verify(gitUserInfoService, never()).gitReposByUsername(login, 1)
+        verify(dao, atLeastOnce()).findByLogin(login)
         verify(netManager, never()).isNetworkAvailable
-
         verifyNoMoreInteractions(gitUserInfoService)
         verifyNoMoreInteractions(netManager)
+        verifyNoMoreInteractions(dao)
 
     }
 

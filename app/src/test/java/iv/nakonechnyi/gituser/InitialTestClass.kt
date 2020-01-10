@@ -29,12 +29,24 @@ abstract class InitialTestClass {
         updated = "2008-01-29T00:59:19Z",
         followers = 1,
         following = 3,
-        publicRepos = 9,
+        publicRepos = 1,
         site = null,
         email = null
     )
 
-    val TEST_REPOS = mock<List<GitRepo>>()
+    val TEST_REPOS = listOf(
+        GitRepo(
+            id = 1,
+            name = "Test Repo",
+            description = null,
+            created = "2007-10-20T05:24:19Z",
+            updated = "2008-01-29T00:59:19Z",
+            url = "https://github.com/gembrilus/Test Repo",
+            language = "kotin",
+            owner = GitRepo.Owner("gembrilus"),
+            size = 1
+        )
+    )
 
     val context = mock<Context>()
 
